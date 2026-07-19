@@ -1,0 +1,31 @@
+<!--
+  Create the moment the first workflow file exists — don't wait until
+  several have accumulated.
+-->
+
+# GitHub Actions Workflows
+
+What each workflow in this directory does, when it runs, and why.
+
+## <workflow-file.yml>
+
+**Triggers:** <exact events — note any `workflow_call` reuse relationship
+with another workflow in this directory>.
+
+- **<job-name>** — <what it does, and why anything non-obvious about it>.
+
+<If this workflow calls or is called by another one, explain the
+relationship and why it's structured that way (e.g. "one source of truth
+for what 'passing checks' means regardless of which trigger fired it").>
+
+**Real bug found and fixed here** (if any — write up in full: root cause,
+how found, the fix, and the takeaway for next time; don't compress this to
+"fixed a bug"):
+
+<Full writeup.>
+
+## dependabot.yml
+
+<Not a workflow, but lives alongside these — what ecosystems it tracks and
+on what cadence. Note whether security alerts are also enabled at the
+repo-settings level, since that's not visible in this file.>

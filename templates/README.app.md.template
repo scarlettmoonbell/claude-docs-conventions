@@ -1,0 +1,41 @@
+<!--
+  For an application/product repo (site, app, service — not an infra repo).
+  See templates/README.infra.md.template for that variant.
+-->
+
+# <Project Name>
+
+<One paragraph: what this repo is, and — just as important — what it is
+NOT. If infra/deploy/roadmap live in a sibling repo, say so here.>
+
+## Operations
+
+Infrastructure, deploy pipeline, and the operations roadmap live in the
+sibling [`<project>-infra`](<url>) repo — see its [`ROADMAP.md`](<url>) for
+what's done and what's next. For what this repo's own CI does, see
+[`.github/workflows/README.md`](.github/workflows/README.md).
+
+## Dependencies
+
+**Runtime:** <language/runtime + version constraint, and why if non-obvious>.
+
+**Key packages** (see `package.json`/equivalent for the full list):
+<the 3-5 packages that actually matter, one clause each on why they're
+there — not an exhaustive restatement of the manifest>. Dev tooling:
+<type-checking, lint, format, test tools>.
+
+**External services this repo depends on:**
+
+- **<Service 1>** — <what it's for, and any non-obvious caveat about why
+  it was chosen or a workaround it needed>.
+- **<Service 2>** — <...>
+
+**Deploy target:** <where this deploys, and what provisions it if that's a
+different repo — link to the sibling repo's relevant section>.
+
+## Where to go next
+
+- **Setting this up from scratch / full operational reference**:
+  <link to infra repo's detailed README>
+- **What's done and what's next, operationally**: <link to ROADMAP.md>
+- **Historical/retired context**: <link to HISTORY.md, once one exists>

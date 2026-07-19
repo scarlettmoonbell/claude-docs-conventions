@@ -1,0 +1,26 @@
+<!--
+  Don't create this preemptively. Add it the first time something in
+  ROADMAP.md actually gets struck through as retired, and move its full
+  original context here.
+-->
+
+# History — Retired <Era/Component> Context
+
+<One paragraph, framed explicitly: this document preserves real engineering
+context, decisions, and lessons from a retired approach that would
+otherwise only survive in git history. Nothing here is actionable against
+the current state — it's a reference for *why* things were once built the
+way they were, and what was learned along the way.>
+
+## <Retired Component/Decision 1>
+
+<Full original context: what it was, why it existed, what was learned
+running it, any bugs/gotchas hit along the way and their root causes.>
+
+## Retired roadmap items
+
+<For each item struck through in ROADMAP.md, its full original
+"revisit when"/"accepted risk" framing plus what actually resolved or
+mooted it.>
+
+- **<Item>.** <Original context.> <What resolved/mooted it, and when.>

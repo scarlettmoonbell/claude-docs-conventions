@@ -1,0 +1,53 @@
+<!--
+  Seed this from a build plan's phases the moment there's a real sequence
+  to track — don't wait until the project "feels big enough."
+-->
+
+# <Project> Roadmap
+
+<One paragraph: what this tracks and the guiding principle — e.g. "a
+prioritized, phased list of what's done and what's next; this isn't a
+backlog to grind through, it's a map of what to do when the project actually
+needs it.">
+
+## ✅ Phase 0 — Done (<date>, <wall-clock duration if useful>)
+
+- **<Item>.** <What was actually built/verified — real accomplishment, not
+  aspiration.>
+
+**Real bug/incident found during this work** (if any — document with root
+cause, how it was found, the fix, and the general takeaway; this is often
+the most valuable paragraph in the document):
+
+<Full writeup, in the same voice as the rest of this doc.>
+
+## 🗓 Phase N — Revisit as the project grows
+
+Not urgent today; each item has a concrete trigger for when it becomes
+worth doing.
+
+- **<Item>.** _Revisit when_: <concrete, checkable condition — never a bare
+  "later">.
+
+## 📌 Phase N — Accepted risk today, named explicitly
+
+Deliberate, reasonable tradeoffs at current scale — named so they're a
+conscious choice, not an unnoticed blind spot.
+
+- **<Item>.** <Why this is acceptable now, and what would change that.>
+
+## 🚀 Phase N — Preproduction rollout
+
+<Only if relevant — the concrete pre-launch checklist, distinct from
+"someday" items because it has a triggering event (going live), not a
+condition to watch for.>
+
+## How to use this document
+
+When picking up a later-phase item: check whether its trigger has actually
+happened before starting. When an item gets done, **mark it done in place,
+within the phase it already belongs to** — do not relocate it to Phase 0.
+When an item is retired (no longer relevant, as opposed to completed),
+strike it through with a one-line note explaining why and when, and move its
+full original context to `HISTORY.md` rather than deleting it or letting
+this document bloat.

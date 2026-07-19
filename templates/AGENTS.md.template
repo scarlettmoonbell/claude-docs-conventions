@@ -1,0 +1,30 @@
+<!--
+  Copy to AGENTS.md at repo root, then:
+    ln -s AGENTS.md CLAUDE.md
+  Keep this short. It's a working-agreement doc for an agent (or a new
+  contributor) picking up the repo cold — not a full README.
+-->
+
+## Development
+
+<!-- The one or two commands that matter before touching anything. -->
+
+When starting the dev server, use background mode:
+
+```
+<dev command> --background
+```
+
+Manage the background server with `<tool> status`, `<tool> stop`, and
+`<tool> logs`.
+
+## Documentation
+
+Full documentation: <link to the primary framework/tool's official docs>
+
+Consult these guides before working on related tasks:
+
+- [<Topic 1, e.g. Adding pages/routes>](<link>)
+- [<Topic 2, e.g. Working with components>](<link>)
+- [<Topic 3, e.g. Adding or managing content>](<link>)
+- [<Topic 4, e.g. Styling>](<link>)

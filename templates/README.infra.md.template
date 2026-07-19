@@ -1,0 +1,66 @@
+<!--
+  For an infra/IaC repo, or a tool-specific nested README (opentofu/README.md,
+  docker/README.md) inside a larger repo. Adds setup/gaps/CI-reasoning
+  sections on top of the app README shape.
+-->
+
+# <Project Name> — Infrastructure
+
+<One paragraph: what this manages, end to end. Note the tooling choice and
+why if it's non-default (e.g. "OpenTofu, not Terraform — see below").>
+
+This repo does _not_ contain <the thing it provisions infra for> itself —
+that's the sibling [`<project>`](<url>) repo. This repo provisions what that
+repo's CI deploys onto.
+
+## Repository structure
+
+```text
+<annotated directory tree — comment every non-obvious file/dir>
+```
+
+## Dependencies
+
+**Local tooling:** <CLI tools + version constraints, why each is needed>.
+
+**Providers / SDKs used** (`<main config file>`):
+
+| Provider | Purpose |
+| --- | --- |
+| `<provider>` | <what it manages> |
+
+**External services this infra depends on:**
+
+- **<Service>** — <what for>.
+
+**Sibling repo:** [`<project>`](<url>) — <the dependency direction, spelled
+out explicitly, confirming whether it's one-way>.
+
+## What this does NOT do
+
+Read this before assuming a fresh apply gets you a working system from
+nothing — see [Known Gaps](#known-gaps) below.
+
+## One-time setup
+
+<Numbered, copy-pasteable steps. Exactly where to get each credential/token
+and what scope it needs. Don't skip steps that feel "obvious.">
+
+## Known Gaps
+
+Things this repo's automation cannot do, and why — so nobody discovers this
+by surprise mid-disaster-recovery.
+
+- **<Gap 1>.** <Why it can't be automated, and the manual step instead.>
+
+## CI/CD
+
+<What runs in CI on which trigger.> Beyond that: <what was deliberately
+NOT automated, and why — the actual reasoning, not just silence about the
+gap. If something was evaluated and rejected, say so explicitly with the
+date and the reasoning, the way a ROADMAP.md incident would be written up.>
+
+## Workflow: <branch/PR convention>
+
+<State the convention and whether it's actually enforced by the platform or
+just discipline — be honest about which.>
