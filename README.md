@@ -13,9 +13,12 @@ flavor), `ROADMAP.md`, `HISTORY.md`, and `.github/workflows/README.md`.
 Read [`DEVOPS.md`](DEVOPS.md) alongside it for the engineering-practice
 conventions that pair with the documentation shape: preferring open-source
 tooling, keeping the dev environment portable, defining infrastructure and
-automation as code, and documenting the deploy process for the dev
-environment, the application, and provisioned resources as three distinct,
-clearly-owned write-ups.
+automation as code, documenting the deploy process for the dev environment,
+the application, and provisioned resources as three distinct, clearly-owned
+write-ups, favoring cost-effective availability (managed platforms over
+self-managed redundancy where that's genuinely cheaper), and least-privilege
+security policy (firewalling, credential/service-account scoping, secret
+handling).
 
 ## Using this repo
 
