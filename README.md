@@ -10,6 +10,13 @@ behind the pattern, and a section-by-section breakdown of what belongs in
 `AGENTS.md`/`CLAUDE.md`, `README.md` (both an app-repo and an infra-repo
 flavor), `ROADMAP.md`, `HISTORY.md`, and `.github/workflows/README.md`.
 
+Read [`DEVOPS.md`](DEVOPS.md) alongside it for the engineering-practice
+conventions that pair with the documentation shape: preferring open-source
+tooling, keeping the dev environment portable, defining infrastructure and
+automation as code, and documenting the deploy process for the dev
+environment, the application, and provisioned resources as three distinct,
+clearly-owned write-ups.
+
 ## Using this repo
 
 Copy the relevant file from [`templates/`](templates/) into a new project

@@ -5,6 +5,11 @@ this pattern developed in practice. Written down once here so it can be
 applied to a new project directly instead of being reconstructed by reading
 old repos each time.
 
+This document covers the *shape* of the docs themselves. See
+[`DEVOPS.md`](DEVOPS.md) for the paired engineering-practice conventions —
+open-source tooling by default, a portable dev environment, infrastructure
+and automation defined as code — that these docs exist to record.
+
 ## Philosophy
 
 - **Explain why, not just what.** Every non-obvious decision gets its
