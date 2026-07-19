@@ -5,6 +5,11 @@ this pattern developed in practice. Written down once here so it can be
 applied to a new project directly instead of being reconstructed by reading
 old repos each time.
 
+This document covers the *shape* of the docs themselves. See
+[`DEVOPS.md`](DEVOPS.md) for the paired engineering-practice conventions —
+open-source tooling by default, a portable dev environment, infrastructure
+and automation defined as code — that these docs exist to record.
+
 ## Philosophy
 
 - **Explain why, not just what.** Every non-obvious decision gets its
@@ -108,7 +113,7 @@ A phased, living record of operational/build work — not a static backlog.
   writeup inline (root cause, how found, the fix, the general takeaway) —
   this is often the most valuable content in the whole document.
 - **A "revisit later" phase** (🗓) — items that are correct to defer, each
-  with an explicit **"_Revisit when_: \<concrete trigger\>"** — never a bare
+  with an explicit **"*Revisit when*: \<concrete trigger\>"** — never a bare
   "later" with no condition attached.
 - **An "accepted risk" phase** (📌) — tradeoffs made deliberately at current
   scale, named explicitly so they're a conscious choice being revisited
@@ -146,13 +151,29 @@ One section per workflow file, each covering:
   as a `ROADMAP.md` incident — these are exactly the kind of thing that
   silently bites the next person touching CI config if it isn't recorded.
 
+**The first workflow in any new repo following this pattern is a
+`docs.yml`** — a `pull_request`-triggered markdown-lint check scoped to
+`**/*.md`, not path-filtered to any subdirectory. A repo whose only content
+is documentation (or that hasn't written any application code yet) still
+has something worth checking on every PR from commit one; don't wait for
+"real" CI to exist first. If the repo is private on GitHub's free plan,
+required status checks aren't available (the branch-protection and
+rulesets APIs both return an upgrade-required error) — the check still
+runs and reports pass/fail on the PR, so treat it as a real gate by
+discipline (wait for it before merging) rather than one enforced by the
+platform. Say so explicitly in `.github/workflows/README.md` rather than
+letting a reader assume the green check is a hard gate when it isn't.
+
 ## How to apply this to a new project
 
 1. Start every new repo with `AGENTS.md` (symlinked `CLAUDE.md`) and a
    `README.md` with at least the Dependencies section — don't wait until the
    repo feels "big enough."
 2. Add `.github/workflows/README.md` the moment the first workflow file
-   exists, not after several have accumulated.
+   exists, not after several have accumulated. That first workflow should
+   be `docs.yml` (markdown-lint on every PR touching `**/*.md`) — add it
+   before any code-specific CI, even on a repo that's nothing but docs so
+   far.
 3. Add `ROADMAP.md` once there's a real, ongoing operational/build sequence
    to track — a brand-new scaffold can seed it directly from a build plan's
    phases.
