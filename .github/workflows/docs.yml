@@ -1,0 +1,24 @@
+name: Docs
+
+# This repo is nothing but documentation, so this is the whole CI story —
+# not path-filtered further than **/*.md since there's nothing else here to
+# scope around. Runs on every PR that touches a markdown file.
+
+on:
+  pull_request:
+    paths:
+      - "**/*.md"
+
+jobs:
+  markdown-lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@8de2aa07cae85fd17c0b35642db70cf5495f1d25 # v24.0.0
+        with:
+          globs: "**/*.md"
