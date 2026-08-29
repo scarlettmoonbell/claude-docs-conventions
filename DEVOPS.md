@@ -34,6 +34,28 @@ re-decided (or silently skipped) each time.
   untracked exception. If a resource type doesn't support `import`, it's
   still fine to let `apply` adopt already-correct live state fresh, as long
   as `plan` is read in full first to confirm it's non-destructive.
+- **Codify anything that was done manually, the moment it's practical to
+  — don't just avoid *new* manual work, go back for the old kind.** A
+  manual action leaves nothing a future `plan` can see: a DNS record
+  pasted into a provider's dashboard, an account setting flipped once
+  during setup. The email DNS records for the site (domain-verification
+  TXT, MX, three DKIM/ARC CNAMEs, SPF, DMARC) were pulled directly from
+  the provider's own account-specific setup page — not guessed — and
+  written into `migadu-email.tf` as `cloudflare_dns_record` resources
+  instead of being pasted into Cloudflare's dashboard by hand, then
+  verified resolving via `dig` immediately after `apply`, with zero drift
+  on the next `plan`. Treat a piece of still-manual working infrastructure
+  as an open item, not a closed one, until it's been backfilled into code
+  — imported where the provider's tooling supports it, recreated as a new
+  resource where it doesn't. If something genuinely can't be codified (no
+  API exists — classic GitHub OAuth Apps have no creation API, so this
+  project's Decap CMS proxy OAuth App stays hand-created), that's a
+  `Known Gaps` entry naming the specific limitation, not a reason to stop
+  looking at everything else. Codifying only runs one direction, too:
+  removing a resource from IaC state doesn't undo its real-world
+  counterpart — dropping the old VPS from Terraform didn't stop it from
+  running (and billing) for two more days until someone actually checked
+  and shut it down by hand.
 - **Contain and make the development environment portable.** A contributor
   (or an agent) should be able to get a working dev environment from a
   fresh checkout with minimal manual setup — pinned versions, no
@@ -176,6 +198,8 @@ existing shape from `CONVENTIONS.md`:
 | Firewall rules, port exposure, service account/sudo scoping | `README.infra.md`'s **One-time setup** (what's opened and why) and **Known Gaps** (anything drafted but not yet enforced — e.g. a firewall plan written but not enabled) |
 | Credential scoping (read-only vs. write tokens, secret file permissions) | README `Dependencies`/provider table, with the *why* stated inline the same as any other non-default choice |
 | A least-privilege change that itself caused an outage (under-scoping, not over-scoping) | Written up in full in `.github/workflows/README.md` or `ROADMAP.md`, exactly like any other incident — the lesson is "find the actual minimum," not "grant less" |
+| Manual state that still needs backfilling into code | A `ROADMAP.md` item until it's done (not a `Known Gaps` entry — that's reserved for the genuinely-impossible case); once codified, mark it done in place, the same as any other roadmap item |
+| Something confirmed genuinely impossible to codify (no API exists) | `README.infra.md`'s **Known Gaps**, naming the specific limitation — not silence, and not lumped in with items that are simply not done yet |
 
 ## How to apply this to a new project
 
@@ -212,3 +236,13 @@ existing shape from `CONVENTIONS.md`:
    `Known Gaps` — a drafted plan is not a control, and the gap between
    the two is exactly the kind of thing that should never be discovered
    by surprise.
+8. Periodically look for infrastructure that exists only because someone
+   clicked a button once — a DNS record, an account setting, an API
+   credential created through a provider's UI — and pull its exact values
+   from the provider's own setup page (never guessed) to write into code.
+   Verify it still works the same way after codifying (e.g. `dig` for a
+   DNS record) before trusting that the next `plan` showing zero drift
+   actually means zero drift. Only stop and file a `Known Gaps` entry
+   instead once you've confirmed the provider genuinely has no API for
+   it — not on the first sign that codifying it would take longer than
+   doing it by hand again.
