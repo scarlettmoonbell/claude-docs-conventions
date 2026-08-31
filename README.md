@@ -16,9 +16,16 @@ tooling, keeping the dev environment portable, defining infrastructure and
 automation as code, documenting the deploy process for the dev environment,
 the application, and provisioned resources as three distinct, clearly-owned
 write-ups, favoring cost-effective availability (managed platforms over
-self-managed redundancy where that's genuinely cheaper), and least-privilege
+self-managed redundancy where that's genuinely cheaper), least-privilege
 security policy (firewalling, credential/service-account scoping, secret
-handling).
+handling), and codifying anything done manually — not just avoiding new
+manual work, but backfilling the old kind into code too.
+
+Read [`INTERFACE.md`](INTERFACE.md) for the third layer: how anything with
+a user-facing screen should look and behave — defaulting to the target
+platform's own official human-interface guidelines (Apple HIG, Material
+Design, Fluent) rather than bespoke patterns, with accessibility treated as
+inside that guidance rather than a separate pass.
 
 ## Using this repo
 
