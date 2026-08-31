@@ -8,7 +8,10 @@ old repos each time.
 This document covers the *shape* of the docs themselves. See
 [`DEVOPS.md`](DEVOPS.md) for the paired engineering-practice conventions —
 open-source tooling by default, a portable dev environment, infrastructure
-and automation defined as code — that these docs exist to record.
+and automation defined as code — that these docs exist to record. See
+[`INTERFACE.md`](INTERFACE.md) for the paired UI conventions — deferring to
+the target platform's own human-interface guidelines rather than bespoke
+patterns — for any project with a user-facing screen.
 
 ## Philosophy
 
