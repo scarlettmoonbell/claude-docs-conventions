@@ -3,9 +3,11 @@
     "default": true,
     "MD013": {
       // Prose is hand-wrapped to ~80 cols throughout this repo; tables
-      // genuinely can't be wrapped without breaking their syntax, so only
-      // they're exempted here rather than raising the limit globally.
-      "tables": false
+      // and fenced code blocks genuinely can't be wrapped without
+      // breaking their syntax (or the command itself), so only they're
+      // exempted here rather than raising the limit globally.
+      "tables": false,
+      "code_blocks": false
     }
   }
 }

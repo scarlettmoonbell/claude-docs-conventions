@@ -1,0 +1,10 @@
+# Not a full dependabot.yml — a block to merge into a consumer project's
+# existing .github/dependabot.yml (or the whole file, if it doesn't have
+# one yet), after adding this repo as a submodule:
+#   git submodule add git@github.com:scarlettmoonbell/claude-docs-conventions.git .conventions
+# See CONVENTIONS.md's "Consuming this repo from another project" section.
+
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"
