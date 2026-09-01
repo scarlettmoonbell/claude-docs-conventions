@@ -167,6 +167,57 @@ discipline (wait for it before merging) rather than one enforced by the
 platform. Say so explicitly in `.github/workflows/README.md` rather than
 letting a reader assume the green check is a hard gate when it isn't.
 
+## Consuming this repo from another project
+
+This repo (and its siblings `DEVOPS.md`/`INTERFACE.md`) isn't meant to be
+read once and reconstructed from memory in every project — clone it in and
+keep it current automatically, rather than manually re-syncing.
+
+- **Add it as a git submodule, not a subtree or a copy-paste:**
+
+  ```sh
+  git submodule add git@github.com:scarlettmoonbell/claude-docs-conventions.git .conventions
+  ```
+
+  A submodule keeps an exact, pinned commit reference — a consumer project
+  always knows precisely which version of these conventions it's
+  following — and, critically, is natively tracked by Dependabot, so no
+  custom sync workflow needs writing or maintaining anywhere.
+- **Track it with Dependabot's `gitsubmodule` ecosystem** — the same
+  mechanism this account's repos already use to track GitHub Actions and
+  Terraform providers, not a hand-rolled "check for updates" script. Add
+  the block from `templates/dependabot-gitsubmodule-block.yml.template`
+  to the consumer repo's existing `.github/dependabot.yml`:
+
+  ```yaml
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  ```
+
+  Dependabot opens a PR whenever this repo's `main` moves, on the
+  configured schedule — reviewed and merged like any other PR, never
+  auto-merged. Chosen over a custom scheduled workflow specifically
+  because it reuses infrastructure that already exists rather than adding
+  new automation surface to maintain — see `DEVOPS.md`'s "prefer boring,
+  native automation over custom" principle.
+- **Point the consumer repo's `AGENTS.md` at the submodule** so the agent
+  actually reads it — list `.conventions/CONVENTIONS.md`,
+  `.conventions/DEVOPS.md`, and `.conventions/INTERFACE.md` in its
+  **Documentation** section as required reading before starting work. The
+  submodule being present on disk doesn't make anything read it
+  unprompted.
+- **Known tradeoff, accepted deliberately:** submodules are genuinely a
+  little clunky for humans — a fresh clone needs
+  `git clone --recurse-submodules`, or a separate `git submodule update
+  --init` afterward, and a submodule left un-initialized silently looks
+  like an empty directory rather than raising an error. Weighed against a
+  git subtree (no separate init step, but no Dependabot-equivalent —
+  updates would need a custom scheduled workflow instead) and decided in
+  the submodule's favor specifically because the update mechanism matters
+  more here than clone ergonomics.
+
 ## How to apply this to a new project
 
 1. Start every new repo with `AGENTS.md` (symlinked `CLAUDE.md`) and a
@@ -186,5 +237,9 @@ letting a reader assume the green check is a hard gate when it isn't.
    of these would a new contributor, or an AI agent with zero prior context,
    need to read first to avoid repeating a mistake someone already made
    here?" — that's the document it belongs in.
+6. Add this repo to the new project as a git submodule with a
+   `gitsubmodule` Dependabot entry (see "Consuming this repo from another
+   project" above) — not a subtree, not a manual copy-paste — so it stays
+   current automatically.
 
 See `templates/` in this repo for copy-pasteable skeletons of each document.

@@ -40,6 +40,7 @@ and fill in the bracketed placeholders:
 | `ROADMAP.md.template` | `ROADMAP.md`, once there's a real build/ops sequence to track |
 | `HISTORY.md.template` | `HISTORY.md`, only once something is first retired |
 | `workflows-README.md.template` | `.github/workflows/README.md`, the moment the first workflow file exists |
+| `dependabot-gitsubmodule-block.yml.template` | Merge into `.github/dependabot.yml`, after adding this repo as a git submodule — see `CONVENTIONS.md`'s "Consuming this repo from another project" |
 
 First applied to the four [SceneStealer](https://github.com/scarlettmoonbell/scenestealer-app)
 repos — check those for a worked example of the pattern in a brand-new
