@@ -224,7 +224,50 @@ real internal precedent cited wherever it already exists.
   the alternative is reconstructing what happened from database state
   after the fact. This doesn't mean logging everything — it means
   logging *transitions*, the specific points where a bug would otherwise
-  stay invisible until someone goes looking for it by hand.
+  stay invisible until someone goes looking for it by hand. Real
+  precedent, not hypothetical: `scenestealer-app`'s job runner
+  (`apps/worker/src/analyze.ts`) added a `logStep()` helper logging
+  elapsed time plus RSS/heap at each pipeline checkpoint specifically
+  *after* an OOM killed the process with no way to tell which step was
+  responsible — the code's own comment frames this as "observability
+  generally, not just crash forensics." Separately, `apps/api/src/routes/videos.ts`
+  keeps a deliberate `console.log` in its queue-consumer handler that its
+  own comment explicitly calls out as "not a temporary debug leftover":
+  Cloudflare's own queue-execution log only shows "Queue ... - Ok," which
+  reveals nothing about whether the actual DB write landed — exactly the
+  gap that turned a real client-saw-failure-but-server-logs-showed-success
+  incident into a multi-round diagnosis before this log line existed.
+- **Carry a correlation/request ID across service boundaries, once a
+  request crosses more than one.** A request that flows through
+  multiple services (an API, a queue consumer, a separate worker
+  process) is far harder to trace without a shared ID tying its log
+  lines together across all of them — `scenestealer-app`'s own api →
+  Fly-worker → database flow has no such ID today, an admitted gap in
+  the code's own comments, not a hypothetical risk. Add one before the
+  second real cross-service debugging session, not after several.
+- **Uptime monitoring and application error tracking are different
+  observability layers — one doesn't substitute for the other.** An
+  external check (Better Stack) answers "is it reachable"; it says
+  nothing about whether requests that got a `200` actually did the
+  right thing. `montage-a-trois-infra` already draws this line
+  explicitly in its own `ROADMAP.md`: Better Stack is live
+  (`opentofu/monitoring.tf`), while a separate, still-unbuilt item for
+  real exception tracking (e.g. Sentry) is named specifically because it
+  "catches actual application exceptions rather than just 'is it
+  reachable.'" Track them as two separate line items, not one.
+- **Naming a swallowed error as a deliberate tradeoff is the right
+  instinct — but it's still a real gap, and the write-up should say
+  so.** `queenjupiter-site`'s booking-confirmation email path
+  deliberately swallows a send failure with a comment explaining exactly
+  why (the operator otherwise never finds out about a submission whose
+  own confirmation email failed), which is the correct way to make that
+  call visible instead of silent. Its `ROADMAP.md` then names the
+  resulting blind spot explicitly under its own "Observability —
+  suggested, not built" heading, with a concrete cheap fix proposed
+  (a Worker analytics event or a webhook) rather than left as vague
+  future work — that's the model to copy: comment the tradeoff at the
+  code, then track the gap it leaves at the doc level with an actual
+  next step attached, not just "TODO: add monitoring."
 - **Never log a secret or sensitive-PII value in plaintext, even at
   debug level.** Per OWASP's Logging Cheat Sheet: session tokens, access
   tokens, passwords, encryption keys, and payment/health/government-ID
