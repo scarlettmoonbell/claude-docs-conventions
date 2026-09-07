@@ -37,6 +37,24 @@ patterns — for any project with a user-facing screen.
   often the most valuable paragraphs in the whole repo six months later.
 - **Track wall-clock reality**, not just intentions — dates, durations, what
   was actually verified (not just "should work").
+- **Ground a new convention in industry authority as well as internal
+  precedent — and say which is which.** Internal precedent (a real
+  decision already made in one of this account's repos) isn't always
+  available, and isn't always the best answer, for well-studied domains
+  like security, logging, accessibility, and observability — check
+  established external references (e.g. OWASP cheat sheets, the
+  Twelve-Factor App, a platform vendor's own best-practice docs, WCAG)
+  before writing a rule from scratch, and name them next to the specific
+  principle they justify, not just in a bibliography at the end. When a
+  whole section draws primarily on external sources rather than internal
+  precedent, say so explicitly at the top of that section — see
+  `DEVOPS.md`'s **Logging & observability** section for the worked
+  example — so a reader can tell "this is what actually happened here"
+  apart from "this is what the industry recommends," since the two carry
+  different weight and different revisit triggers. When updating an
+  *existing* convention, the same check applies: before assuming a rule
+  is settled, look for whether the industry guidance behind it has
+  moved, not just whether internal practice has.
 
 ## The document set
 
