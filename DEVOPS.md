@@ -179,6 +179,84 @@ re-decided (or silently skipped) each time.
   user, means the running service itself never needs read access to the
   credential it was configured with in the first place.
 
+## Logging & observability
+
+Sourced differently from the rest of this document: the other sections are
+extracted purely from real decisions in this account's own repos; these
+principles are grounded primarily in established external references —
+[the Twelve-Factor App's Logs factor](https://12factor.net/logs),
+[OWASP's Logging Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html),
+and [Cloudflare's own Workers observability guidance](https://developers.cloudflare.com/workers/observability/)
+— applied to this account's actual, mostly-Cloudflare-Workers stack, with
+real internal precedent cited wherever it already exists.
+
+- **Treat logs as an event stream, not a file the application manages.**
+  The Twelve-Factor App's Logs factor: a process writes its events to
+  `stdout`/`stderr`, unbuffered, and never concerns itself with routing,
+  rotating, or storing that stream — that's the execution environment's
+  job, not the app's. On this account's stack that maps directly onto
+  Cloudflare Workers' `console.log`/`console.error`: don't build custom
+  log-shipping infrastructure. `montage-a-trois-infra`'s own `HISTORY.md`
+  already records this lesson from the other direction — a "centralized
+  log shipping" item was correctly retired once the VPS it was written
+  for was gone, noting that "Cloudflare's own dashboard/Logpush would be
+  the equivalent tool for the current architecture" — use the platform's
+  own tool rather than re-inventing one.
+- **Log in structured JSON, not string concatenation.**
+  `console.log(JSON.stringify({...}))`, not
+  `console.log("Got a request to " + path)` — Cloudflare's own Workers
+  best practices flag unstructured string logs as an anti-pattern
+  specifically because they can't be queried or filtered later. Use
+  `console.error` for anything that should surface at error severity in
+  the dashboard, not `console.log` with a hand-rolled `"ERROR:"` prefix.
+- **Enable the platform's native observability before production, not
+  after the first incident.** Every Worker should ship with
+  `observability.enabled: true` in its config, with `head_sampling_rate`
+  set deliberately rather than left at whatever the scaffold defaulted
+  to — sampling rate is the actual cost/volume lever, so tune it instead
+  of either drowning in log volume or flying blind during an incident.
+  Same instinct as this document's cost-effective-availability
+  section: reach for the platform's own tool before building one.
+- **Log the meaningful steps of a multi-step or asynchronous process —
+  not just its final success or failure.** A request or job that fails
+  partway through a pipeline is far easier to debug when each stage logs
+  its own start/complete than when only the terminal outcome is visible;
+  the alternative is reconstructing what happened from database state
+  after the fact. This doesn't mean logging everything — it means
+  logging *transitions*, the specific points where a bug would otherwise
+  stay invisible until someone goes looking for it by hand.
+- **Never log a secret or sensitive-PII value in plaintext, even at
+  debug level.** Per OWASP's Logging Cheat Sheet: session tokens, access
+  tokens, passwords, encryption keys, and payment/health/government-ID
+  data must never appear in a log line — redacted or hashed only, if
+  referencing them is unavoidable at all. This isn't hypothetical for
+  this account: a project whose booking form encrypts identity-revealing
+  fields at rest and GPG-encrypts the operator notification does that
+  specifically so the data stays protected end to end — a stray debug
+  log of the raw submission anywhere in that pipeline would undo all of
+  it in one line. Decide and write down what's safe to log *before*
+  adding the first log line to code that touches sensitive data, not
+  after.
+- **Always log security-relevant events, specifically.** OWASP's
+  non-negotiable list: authentication successes and failures,
+  authorization/access-control failures, input-validation failures, and
+  session-management failures. A rejected attempt against an
+  Access-gated admin route, or a failed step in an OAuth proxy flow, is
+  exactly the kind of event that's cheap to log now and expensive to
+  have missed later.
+- **Sanitize event data before it reaches a log line.** OWASP's
+  log-injection guidance: strip or escape carriage-return/line-feed and
+  delimiter characters from anything user-supplied before logging it,
+  the same way it would be sanitized before being rendered — an
+  unsanitized log line is an injection surface into whatever reads the
+  log next (a dashboard, a script parsing it later, a future SIEM).
+- **A log line should answer when, where, who, and what.** OWASP's
+  structure for a useful event: a timestamp, the service/component and
+  code location, the actor (user ID or source IP, if known), and the
+  event type plus outcome. A bare `console.log("done")` fails this on
+  every axis — the fix costs one more object key, not a new logging
+  framework.
+
 ## Where this shows up in the document set
 
 These principles aren't a new document type — they're captured by the
@@ -200,6 +278,9 @@ existing shape from `CONVENTIONS.md`:
 | A least-privilege change that itself caused an outage (under-scoping, not over-scoping) | Written up in full in `.github/workflows/README.md` or `ROADMAP.md`, exactly like any other incident — the lesson is "find the actual minimum," not "grant less" |
 | Manual state that still needs backfilling into code | A `ROADMAP.md` item until it's done (not a `Known Gaps` entry — that's reserved for the genuinely-impossible case); once codified, mark it done in place, the same as any other roadmap item |
 | Something confirmed genuinely impossible to codify (no API exists) | `README.infra.md`'s **Known Gaps**, naming the specific limitation — not silence, and not lumped in with items that are simply not done yet |
+| Observability config for a new service (Worker, Function, background job) | README `Dependencies`/one-time setup — state that `observability` is enabled and why `head_sampling_rate` is set where it is |
+| A logging/PII decision (what's redacted, what's never logged) | Written down next to the code it protects, the same "explain why" rule as any other non-default choice — not left implicit |
+| A gap in step-level logging for a multi-stage pipeline | `Known Gaps` or a `ROADMAP.md` item, not silence — same treatment as any other incomplete piece |
 
 ## How to apply this to a new project
 
@@ -246,3 +327,9 @@ existing shape from `CONVENTIONS.md`:
    instead once you've confirmed the provider genuinely has no API for
    it — not on the first sign that codifying it would take longer than
    doing it by hand again.
+9. Before shipping a new Worker/Function/service to production, confirm
+   three things together, as part of "done" rather than a follow-up
+   task: `observability` is enabled with a deliberately-chosen
+   `head_sampling_rate`; nothing it logs could be a secret or sensitive
+   PII in plaintext; and its meaningful step transitions — not just
+   final success/failure — are visible in the log stream.
