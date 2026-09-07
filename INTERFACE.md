@@ -33,12 +33,27 @@ correct or extend it with a real example the way `DEVOPS.md` already does.*
   else), what the guideline-compliant version would have looked like, and
   what would trigger reverting to it.
 - **Accessibility guidance isn't separate from HIG guidance — it's
-  inside it.** Apple's HIG, Material Design, and WCAG all treat contrast,
-  touch-target size, dynamic-type/text scaling, and screen-reader
-  semantics as first-class requirements, not an add-on pass at the end.
-  Treat a screen that hasn't been checked against them as unfinished, not
-  as "done, needs an accessibility pass" — the `design:accessibility-review`
-  skill (WCAG 2.1 AA) is the mechanical way to do that check.
+  inside it.** Apple's HIG, Material Design, and
+  [WCAG 2.2](https://www.w3.org/TR/WCAG22/) (the current version —
+  supersedes 2.1) all treat contrast, touch-target size,
+  dynamic-type/text scaling, and screen-reader semantics as first-class
+  requirements, not an add-on pass at the end. Treat a screen that
+  hasn't been checked against them as unfinished, not as "done, needs an
+  accessibility pass" — the `design:accessibility-review` skill is the
+  mechanical way to do that check. Concrete, testable thresholds at
+  Level AA, not just "check contrast": text contrast at least 4.5:1
+  (3:1 for large text — 18pt+, or 14pt+ bold), non-text UI components
+  at least 3:1 against their adjacent color (WCAG 1.4.3, 1.4.11), and
+  touch targets at least 44×44 CSS px (WCAG 2.5.8).
+- **Two WCAG 2.2 criteria worth checking by name, since they're new
+  enough to be commonly missed:** *Focus Not Obscured* (2.4.11) — a
+  sticky header, footer, or dialog must never hide the element that
+  currently has keyboard focus, an easy bug to ship without ever
+  noticing since it only shows up navigating by keyboard — and
+  *Accessible Authentication* (3.3.8) — a login/signup flow can't
+  require solving a puzzle or transcribing something from memory as the
+  only path in; if a cognitive-function test is used at all (a CAPTCHA,
+  a security question), there must be a way in that doesn't need it.
 - **Target the current guideline, not whatever was memorized once.**
   Platform guidelines get revised — new platform capabilities, deprecated
   patterns, updated accessibility minimums. Re-check the live guideline
@@ -71,9 +86,10 @@ Same shape as `DEVOPS.md` — no new document type needed:
    whether the platform's own guideline already defines one for this
    exact case. Use the built-in one unless there's a specific, named
    reason not to — and record that reason where the decision lives.
-3. Run an accessibility check (contrast, touch targets, screen-reader
-   labels, dynamic type) as part of finishing a screen, not as an
-   optional follow-up.
+3. Run an accessibility check (contrast ≥4.5:1 text / ≥3:1 large text
+   and UI components, touch targets ≥44×44 CSS px, screen-reader
+   labels, dynamic type, keyboard focus visibility) as part of
+   finishing a screen, not as an optional follow-up.
 4. When picking up UI work after a long gap, re-check against the
    current version of the guideline being followed — treat "the
    guideline changed since I last checked" as the normal case, not an

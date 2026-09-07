@@ -111,6 +111,19 @@ re-decided (or silently skipped) each time.
   asks for, and treat a provider migration that happens to resolve one as
   a real resolution worth recording, not a fact to mention only in
   passing.
+- **Write down one explicit reliability target per live service, even
+  informally — and let it actually govern the pace of risk-taking.**
+  Google's [SRE book](https://sre.google/sre-book/embracing-risk/) calls
+  this an SLO (Service Level Objective): a stated target (e.g. "99.9% of
+  requests succeed this month"), measured against reality, with the gap
+  between the two — the error budget — as what decides whether to ship
+  the next risky change now or slow down first. This doesn't need the
+  full apparatus (per-service on-call rotations, a formal error-budget
+  policy document) to be worth doing at solo-operator scale — even one
+  number, checked before a launch or a risky migration, replaces a
+  gut-feel judgment call with an actual answer to "are we being too
+  aggressive right now." Track it the same place an accepted-risk line
+  already lives (`ROADMAP.md`), not as a separate process.
 
 ## Firewall and other security policies: least privilege
 
@@ -163,6 +176,20 @@ re-decided (or silently skipped) each time.
   mutable version tags**, and let an automated dependency bot keep the
   pin current alongside its version comment — supply-chain hardening
   that costs nothing ongoing once set up.
+- **SHA-pinning covers what a build consumes — a build's own output
+  needs the same integrity story when another repo consumes it.**
+  [SLSA](https://slsa.dev/spec/v1.0/levels) (Supply-chain Levels for
+  Software Artifacts) frames this in levels: Level 1 is just a
+  provenance record of how an artifact was actually built (source
+  commit, build command, build platform) — cheap, no new
+  infrastructure; Level 2 adds a hosted build platform signing that
+  provenance so it's tamper-evident, natively supported on GitHub
+  Actions via `actions/attest-build-provenance` with no separate
+  key-management to run. Anything one repo in this account consumes as
+  a built artifact from another (e.g. a `dist/` published as a
+  `github:owner/repo#main` git dependency) should generate that
+  provenance at build time, not rely on the consuming repo trusting the
+  committed output on faith.
 - **Scan for secrets and known vulnerabilities on every change, not just
   at initial setup.** A secret scanner (e.g. gitleaks) and a
   vulnerability/IaC scanner (e.g. Trivy) on every PR catch what code
@@ -324,6 +351,8 @@ existing shape from `CONVENTIONS.md`:
 | Observability config for a new service (Worker, Function, background job) | README `Dependencies`/one-time setup — state that `observability` is enabled and why `head_sampling_rate` is set where it is |
 | A logging/PII decision (what's redacted, what's never logged) | Written down next to the code it protects, the same "explain why" rule as any other non-default choice — not left implicit |
 | A gap in step-level logging for a multi-stage pipeline | `Known Gaps` or a `ROADMAP.md` item, not silence — same treatment as any other incomplete piece |
+| A service's reliability target (SLO) | `ROADMAP.md`, the same place an accepted-risk line already lives — stated as a number, not a vibe |
+| Build-provenance/attestation status for a published artifact | README `Dependencies`, next to the dependency direction it affects; a `Known Gaps` entry if not yet generated |
 
 ## How to apply this to a new project
 
@@ -376,3 +405,12 @@ existing shape from `CONVENTIONS.md`:
    `head_sampling_rate`; nothing it logs could be a secret or sensitive
    PII in plaintext; and its meaningful step transitions — not just
    final success/failure — are visible in the log stream.
+10. Write down one reliability number per live service — even a rough
+    one — before assuming "we'll know if it's a problem." Use it as the
+    actual answer to "can we ship this risky thing now," not just a
+    number that sits unread in `ROADMAP.md`.
+11. If a repo's build output is consumed by another repo as a
+    dependency (a committed `dist/`, a published package), generate
+    build provenance for it — not just SHA-pin the actions that produce
+    it. If that's not yet in place, it's a `Known Gaps` entry, not a
+    silent trust assumption.
