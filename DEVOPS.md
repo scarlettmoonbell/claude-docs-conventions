@@ -74,6 +74,21 @@ re-decided (or silently skipped) each time.
   machine — a portability bug, not a CI-specific one, that only running
   the automation on a second machine exposed. That's the case for the
   convention, not just a nice anecdote.
+- **Never truncate a command's output when the result will inform a
+  decision — read the whole thing.** Piping to `head`/`tail -N`, passing
+  a small `limit`, or otherwise capping what comes back trades a false
+  sense of speed for a real risk: the exact line that would have changed
+  the decision is the one most likely to be the one that got cut. This
+  isn't hypothetical — an early `git status --short --branch | head -1`
+  check on a repo reported it as clean by only showing the first line,
+  silently hiding real uncommitted work-in-progress (an in-flight
+  landing-page redesign) that only surfaced several steps later when it
+  became impossible to miss. Prefer redirecting full output to a
+  scratch file and reading it whole, or raising the read limit, over any
+  command-level truncation — a slightly longer read costs nothing next
+  to acting on an incomplete picture. This is the same instinct as
+  reading a full `tofu plan` before applying, generalized to every
+  other command whose output gets trusted.
 
 ## Availability & cost-effective resilience
 
@@ -414,3 +429,8 @@ existing shape from `CONVENTIONS.md`:
     build provenance for it — not just SHA-pin the actions that produce
     it. If that's not yet in place, it's a `Known Gaps` entry, not a
     silent trust assumption.
+12. Before concluding anything from a command's output — a status
+    check, a log tail, a search result — make sure it's the full
+    output, not a piped/limited slice. If a result seems to say
+    "nothing here," confirm that's actually true rather than an
+    artifact of truncation before acting on it.
